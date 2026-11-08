@@ -10,7 +10,13 @@ chamber dimensions.
   apogee -> motor geometry with ``rocketpy.Flight`` in the loop.
 """
 
-from propulpy.design.mission import SearchResult, find_grain_length_for_apogee
+from propulpy.design.mission import (
+    IterationRecord,
+    RocketApogeeDesignResult,
+    SearchResult,
+    design_motor_for_rocket_apogee,
+    find_grain_length_for_apogee,
+)
 from propulpy.design.nozzle import (
     NozzleDimensions,
     dimension_nozzle,
@@ -18,8 +24,11 @@ from propulpy.design.nozzle import (
 )
 
 __all__ = [
+    "IterationRecord",
     "NozzleDimensions",
+    "RocketApogeeDesignResult",
     "SearchResult",
+    "design_motor_for_rocket_apogee",
     "dimension_nozzle",
     "find_grain_length_for_apogee",
     "optimize_divergent_along_trajectory",

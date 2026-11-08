@@ -101,3 +101,35 @@ def test_cad_builder_validates_requirements():
     req = _sample_requirements(0.05)
     builder = MotorGeometryBuilder(req)
     assert builder.req.motor_name == "test_srad_38mm"
+
+
+def test_design_motor_for_rocket_apogee():
+    rocketpy = pytest.importorskip("rocketpy")
+    from propulpy import design_motor_for_rocket_apogee
+
+    env = rocketpy.Environment(latitude=4.6097, longitude=-74.0817, elevation=2600.0)
+    rocket = rocketpy.Rocket(
+        radius=0.041,
+        mass=1.650,
+        inertia=(0.18, 0.18, 0.002),
+        power_off_drag=0.45,
+        power_on_drag=0.45,
+        center_of_mass_without_motor=0.0,
+        coordinate_system_orientation="tail_to_nose",
+    )
+    rocket.add_nose(length=0.22, kind="von karman", position=0.55)
+    rocket.add_trapezoidal_fins(
+        n=4, root_chord=0.12, tip_chord=0.05, span=0.09, position=-0.95
+    )
+    rocket.set_rail_buttons(upper_button_position=0.10, lower_button_position=-0.75)
+
+    res = design_motor_for_rocket_apogee(
+        rocket=rocket,
+        environment=env,
+        target_apogee=1000.0,
+        apogee_tolerance_pct=1.0,
+    )
+    assert abs(res.apogee_error_pct) <= 1.0
+    assert res.simulated_apogee_m == pytest.approx(1000.0, rel=0.01)
+    assert res.motor.number_of_grains == 3
+    assert res.nozzle_dims.exit_diameter > res.nozzle_dims.throat_diameter
