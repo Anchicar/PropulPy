@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import logging
 import math
 from typing import TYPE_CHECKING
 
 import numpy as np
 
 from propulpy.results import MotorResults
+
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from propulpy.chamber import Chamber
@@ -54,12 +57,33 @@ def simulate_quasi_steady(
         Complete time histories and motor performance metrics.
     """
     if not grains:
-        raise ValueError("At least one grain is required for simulation.")
+        msg = (
+            "[simulate_quasi_steady] Empty grains list received. "
+            "Constraint violated: len(grains) >= 1. At least one grain is required for simulation."
+        )
+        logger.error(msg)
+        raise ValueError(msg)
 
-    # Maximum web thickness across all grains
     max_web = max(g.web_thickness for g in grains)
     if max_web <= 0:
-        raise ValueError("Grains must have a positive web thickness.")
+        msg = (
+            f"[simulate_quasi_steady] Invalid max_web={max_web:.6e} m across {len(grains)} grains. "
+            "Constraint violated: grains must have a positive web thickness (> 0 m)."
+        )
+        logger.error(msg)
+        raise ValueError(msg)
+
+    logger.info(
+        "[simulate_quasi_steady] Starting simulation: propellant=%s, n_grains=%d, max_web=%.2f mm, "
+        "Dt=%.2f mm, De=%.2f mm, Pa=%.3f bar, n_steps=%d",
+        propellant.name,
+        len(grains),
+        max_web * 1e3,
+        nozzle.throat_diameter * 1e3,
+        nozzle.exit_diameter * 1e3,
+        ambient_pressure / 1e5,
+        n_steps,
+    )
 
     # Discretize web regression: avoid absolute 100% web to prevent zero burn area at last step
     x_steps = np.linspace(0.0, max_web * 0.9995, n_steps)
@@ -112,11 +136,9 @@ def simulate_quasi_steady(
 
     # Optional chamber blowdown depressurization tail
     if include_blowdown and pc[-1] > ambient_pressure * 1.05:
-        # Estimate free volume inside chamber at burnout
         if chamber is not None:
             v_free = chamber.internal_volume
         else:
-            # Estimate from grains envelope
             total_grain_len = sum(getattr(g, "length", 0.06) for g in grains)
             d_ext = grains[0].outer_diameter
             v_free = (math.pi / 4.0) * d_ext**2 * total_grain_len * 1.15
@@ -125,8 +147,14 @@ def simulate_quasi_steady(
         tau = max(v_free / (at * propellant.cstar), 1e-3)
         t_bo = time[-1]
         p_bo = pc[-1]
+        logger.debug(
+            "[simulate_quasi_steady] Modeling blowdown tail: V_free=%.2f cm^3, tau=%.4f s, t_bo=%.3f s, P_bo=%.2f bar",
+            v_free * 1e6,
+            tau,
+            t_bo,
+            p_bo / 1e5,
+        )
 
-        # 25 steps for blowdown
         dt_bd = tau * 0.15
         bd_times = []
         bd_pc = []
@@ -164,7 +192,7 @@ def simulate_quasi_steady(
     else:
         regression = x_steps
 
-    return MotorResults(
+    res = MotorResults(
         time=time,
         thrust=thrust,
         chamber_pressure=pc,
@@ -180,3 +208,15 @@ def simulate_quasi_steady(
         chamber=chamber,
         ambient_pressure=ambient_pressure,
     )
+    logger.info(
+        "[simulate_quasi_steady] Simulation completed (%s): Itot=%.1f Ns, Isp=%.1f s, t_burn=%.2f s, "
+        "F_max=%.1f N, Pc_max=%.2f bar, Kn_max=%.1f",
+        res.motor_class,
+        res.total_impulse,
+        res.specific_impulse,
+        res.burn_time,
+        res.max_thrust,
+        res.max_chamber_pressure / 1e5,
+        float(np.max(res.kn)),
+    )
+    return res

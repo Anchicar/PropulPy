@@ -7,10 +7,13 @@ coefficients in the common ``r [m/s] = a * (Pc [MPa])^n`` form.
 
 from __future__ import annotations
 
+import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 from propulpy.units import MPA
+
+logger = logging.getLogger(__name__)
 
 
 class BurnRateLaw(ABC):
@@ -75,11 +78,25 @@ class PiecewiseSaintRobert(BurnRateLaw):
 
     def __post_init__(self):
         if not self.segments:
-            raise ValueError("At least one segment is required.")
+            msg = (
+                "[PiecewiseSaintRobert.__post_init__] Empty segments tuple received. "
+                "Constraint violated: len(segments) >= 1. Provide at least one (p_min, p_max, SaintRobert) segment."
+            )
+            logger.error(msg)
+            raise ValueError(msg)
         segs = tuple(sorted(self.segments, key=lambda s: s[0]))
-        for (_, p_max, _), (p_min, _, _) in zip(segs[:-1], segs[1:], strict=False):
+        for idx, ((p0_min, p_max, _), (p_min, p1_max, _)) in enumerate(
+            zip(segs[:-1], segs[1:], strict=False)
+        ):
             if abs(p_max - p_min) > 1e-6 * max(p_max, 1.0):
-                raise ValueError("Pressure segments must be contiguous.")
+                msg = (
+                    f"[PiecewiseSaintRobert.__post_init__] Pressure segments {idx} "
+                    f"[{p0_min / 1e6:.3f}, {p_max / 1e6:.3f}] MPa and {idx + 1} "
+                    f"[{p_min / 1e6:.3f}, {p1_max / 1e6:.3f}] MPa must be contiguous "
+                    f"(gap={abs(p_max - p_min):.1f} Pa). Ensure p_max of segment i equals p_min of segment i+1."
+                )
+                logger.error(msg)
+                raise ValueError(msg)
         object.__setattr__(self, "segments", segs)
 
     @classmethod

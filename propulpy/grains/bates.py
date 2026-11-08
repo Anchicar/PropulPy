@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import logging
 import math
 from dataclasses import dataclass
 
 import numpy as np
 
 from propulpy.grains.base import Grain
+
+logger = logging.getLogger(__name__)
 
 _FREE_ENDS = {"neither": 2, "top": 1, "bottom": 1, "both": 0}
 
@@ -38,11 +41,27 @@ class BATES(Grain):
 
     def __post_init__(self):
         if not 0.0 < self.core_diameter < self.diameter:
-            raise ValueError("Require 0 < core_diameter < diameter.")
+            msg = (
+                f"[BATES.__post_init__] Invalid grain diameters: core_diameter={self.core_diameter:.6f} m "
+                f"({self.core_diameter * 1e3:.2f} mm), diameter={self.diameter:.6f} m "
+                f"({self.diameter * 1e3:.2f} mm). Constraint violated: Require 0 < core_diameter < diameter."
+            )
+            logger.error(msg)
+            raise ValueError(msg)
         if self.length <= 0.0:
-            raise ValueError("length must be positive.")
+            msg = (
+                f"[BATES.__post_init__] Invalid grain length={self.length:.6f} m "
+                f"({self.length * 1e3:.2f} mm). Constraint violated: length must be positive (> 0)."
+            )
+            logger.error(msg)
+            raise ValueError(msg)
         if self.inhibited_ends not in _FREE_ENDS:
-            raise ValueError(f"inhibited_ends must be one of {sorted(_FREE_ENDS)}.")
+            msg = (
+                f"[BATES.__post_init__] Invalid inhibited_ends={self.inhibited_ends!r}. "
+                f"Constraint violated: inhibited_ends must be one of {sorted(_FREE_ENDS)}."
+            )
+            logger.error(msg)
+            raise ValueError(msg)
 
     @property
     def free_ends(self) -> int:
