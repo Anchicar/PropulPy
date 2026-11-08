@@ -14,6 +14,11 @@ __version__ = "0.2.0"
 
 from propulpy.cad import MotorGeometryBuilder, MotorGeometryResult
 from propulpy.chamber import Chamber
+from propulpy.constants import (
+    EnvironmentConstants,
+    constants_from_environment,
+    default_rocketpy_environment,
+)
 from propulpy.design import (
     NozzleDimensions,
     SearchResult,
@@ -59,6 +64,7 @@ __all__ = [
     "ConicalNozzle",
     "CrossSectionGrain2D",
     "EndBurner",
+    "EnvironmentConstants",
     "Finocyl",
     "FlightPerformanceReport",
     "FlightRequirements",
@@ -83,6 +89,8 @@ __all__ = [
     "ThrustCurveData",
     "__version__",
     "build_solid_motor",
+    "constants_from_environment",
+    "default_rocketpy_environment",
     "dimension_nozzle",
     "evaluate_motor_performance",
     "find_grain_length_for_apogee",

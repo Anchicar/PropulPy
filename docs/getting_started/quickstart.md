@@ -4,9 +4,11 @@ Este tutorial recorre el flujo de trabajo completo de PropulPy tomando como caso
 
 ---
 
-## Código Completo del Ejemplo
+## Notebooks Interactivos del Ejemplo
 
-Puedes encontrar este script ejecutable en `examples/quickstart_ultraluminics.py`.
+Puedes abrir y ejecutar paso a paso los notebooks interactivos con figuras técnicas generadas por código en:
+- `examples/quickstart_ultraluminics.ipynb`
+- `examples/srad_38mm_pipeline.ipynb`
 
 ```python
 from pathlib import Path

@@ -31,18 +31,31 @@ evaluated at any launch site and date.
 | `flight` & `design.mission` (`MotorRequirements`, RocketPy apogee check, `find_grain_length_for_apogee`) | ✅ |
 | `cad` (`MotorGeometryBuilder`, parametric 3D STEP AP214 & STL export via CadQuery) | ✅ |
 
-## Quick start
+## Installation & Quick start
+
+Install directly from PyPI:
 
 ```bash
-git clone https://github.com/UltraLuminics/PropulPy.git
+pip install propulpy
+```
+
+Or install from source for development:
+
+```bash
+git clone https://github.com/Anchicar/PropulPy.git
 cd PropulPy
 pip install -e ".[dev]"
 pytest
 ```
 
 ```python
-from propulpy import BATES, KNSB, AmbientConditions
+from rocketpy import Environment
+from propulpy import BATES, KNSB, AmbientConditions, constants_from_environment
 from propulpy.nozzle import ConicalNozzle
+
+env = Environment(latitude=4.6097, longitude=-74.0817, elevation=2600.0)
+amb = AmbientConditions(env)
+env_consts = constants_from_environment(env)
 
 prop = KNSB(cstar_efficiency=0.95)
 grain = BATES(diameter=38e-3, core_diameter=12.5e-3, length=62e-3)
@@ -50,9 +63,10 @@ nozzle = ConicalNozzle(throat_diameter=5.88e-3, exit_diameter=13.8e-3, efficienc
 
 kn = 2 * grain.burn_area(0.0) / nozzle.throat_area
 pc = prop.equilibrium_pressure(kn)
-pa = AmbientConditions(101325.0).ground_pressure
+pa = amb.ground_pressure
 print(
-    f"Kn = {kn:.1f}, Pc = {pc / 1e5:.1f} bar, F = {nozzle.thrust(prop.k, pc, pa):.1f} N"
+    f"Kn = {kn:.1f}, Pc = {pc / 1e5:.1f} bar, Pa = {pa / 1e5:.3f} bar, "
+    f"g = {env_consts.gravity:.5f} m/s^2, F = {nozzle.thrust(prop.k, pc, pa):.1f} N"
 )
 ```
 
