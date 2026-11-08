@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from propulpy.constants import P_STANDARD
@@ -144,3 +145,127 @@ class SolidMotor:
             n_steps=n_steps,
             include_blowdown=include_blowdown,
         )
+
+    @classmethod
+    def from_ric(cls, filename: str | Path) -> SolidMotor:
+        """Load a ``SolidMotor`` configuration from an openMotor ``.ric`` YAML file.
+
+        Supports ``BATES``, ``EndBurner``, ``Finocyl``, and ``Star`` grains, as well
+        as single or multi-tab ``PiecewiseSaintRobert`` propellant definitions.
+
+        Parameters
+        ----------
+        filename : str or Path
+            Path to the ``.ric`` file.
+
+        Returns
+        -------
+        SolidMotor
+            Configured ``SolidMotor`` instance.
+        """
+        import yaml
+
+        from propulpy.grains import BATES, EndBurner, Finocyl, Star
+        from propulpy.nozzle.nozzle import ConicalNozzle
+        from propulpy.propellants.burn_rate import PiecewiseSaintRobert, SaintRobert
+        from propulpy.propellants.propellant import Propellant
+
+        raw_text = Path(filename).read_text(encoding="utf-8")
+        # Strip custom openMotor python tags so safe_load works cleanly
+        cleaned_lines = []
+        for line in raw_text.splitlines():
+            if "!!python/" in line:
+                key = line.split(":")[0]
+                cleaned_lines.append(f"{key}:")
+            else:
+                cleaned_lines.append(line)
+        doc = yaml.safe_load("\n".join(cleaned_lines))
+        data = doc.get("data", doc)
+
+        # 1. Propellant
+        prop_d = data["propellant"]
+        tabs = prop_d.get("tabs", [])
+        if not tabs:
+            raise ValueError("Invalid .ric file: propellant has no tabs.")
+        if len(tabs) == 1:
+            t0 = tabs[0]
+            burn_law = SaintRobert(a=float(t0["a"]), n=float(t0["n"]))
+        else:
+            segs = [
+                (
+                    float(t["minPressure"]),
+                    float(t["maxPressure"]),
+                    SaintRobert(a=float(t["a"]), n=float(t["n"])),
+                )
+                for t in tabs
+            ]
+            burn_law = PiecewiseSaintRobert(tuple(segs))
+
+        t0 = tabs[0]
+        propellant = Propellant(
+            name=str(prop_d.get("name", "openMotor Propellant")),
+            density=float(prop_d["density"]),
+            burn_rate=burn_law,
+            k=float(t0["k"]),
+            molar_mass=float(t0["m"]),
+            combustion_temperature=float(t0["t"]),
+        )
+
+        # 2. Nozzle
+        noz_d = data["nozzle"]
+        nozzle = ConicalNozzle(
+            throat_diameter=float(noz_d["throat"]),
+            exit_diameter=float(noz_d["exit"]),
+            divergence_half_angle=float(noz_d.get("divAngle", 15.0)),
+            convergence_half_angle=float(noz_d.get("convAngle", 30.0)),
+            throat_length=float(noz_d.get("throatLength", 0.0)),
+            efficiency=float(noz_d.get("efficiency", 1.0)),
+        )
+
+        # 3. Grains
+        grains = []
+        for g_item in data.get("grains", []):
+            g_type = str(g_item.get("type", "BATES")).lower()
+            props = g_item.get("properties", {})
+            d_out = float(props["diameter"])
+            length = float(props["length"])
+            inhib = str(props.get("inhibitedEnds", "Neither")).lower()
+            if inhib not in {"neither", "top", "bottom", "both"}:
+                inhib = "neither"
+
+            if "end" in g_type:
+                grains.append(EndBurner(diameter=d_out, length=length))
+            elif "finocyl" in g_type:
+                grains.append(
+                    Finocyl(
+                        diameter=d_out,
+                        core_diameter=float(props.get("coreDiameter", d_out * 0.3)),
+                        fin_length=float(props.get("finLength", d_out * 0.15)),
+                        fin_width=float(props.get("finWidth", d_out * 0.05)),
+                        num_fins=int(props.get("numFins", 6)),
+                        length=length,
+                        inhibited_ends=inhib,
+                    )
+                )
+            elif "star" in g_type:
+                grains.append(
+                    Star(
+                        diameter=d_out,
+                        inner_diameter=float(props.get("innerDiameter", d_out * 0.25)),
+                        point_diameter=float(props.get("pointDiameter", d_out * 0.6)),
+                        num_points=int(props.get("numPoints", 5)),
+                        length=length,
+                        inhibited_ends=inhib,
+                    )
+                )
+            else:
+                grains.append(
+                    BATES(
+                        diameter=d_out,
+                        core_diameter=float(props.get("coreDiameter", d_out * 0.3)),
+                        length=length,
+                        inhibited_ends=inhib,
+                    )
+                )
+
+        return cls(propellant=propellant, grains=grains, nozzle=nozzle)

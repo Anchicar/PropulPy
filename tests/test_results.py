@@ -47,6 +47,15 @@ def test_export_ric(sim_results, tmp_path):
     assert "grains:" in content
     assert "nozzle:" in content
 
+    # Round-trip import back into SolidMotor via from_ric
+    loaded_motor = SolidMotor.from_ric(ric_file)
+    assert loaded_motor.number_of_grains == len(sim_results.grains)
+    assert loaded_motor.nozzle.throat_diameter == pytest.approx(
+        sim_results.nozzle.throat_diameter
+    )
+    res2 = loaded_motor.simulate()
+    assert res2.total_impulse == pytest.approx(sim_results.total_impulse, rel=0.05)
+
 
 def test_to_rocketpy_conversion(sim_results):
     rocketpy = pytest.importorskip("rocketpy")

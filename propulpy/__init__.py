@@ -10,7 +10,7 @@ PropulPy has two layers:
 All quantities are in SI units unless an explicit unit helper or parameter says otherwise.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 from propulpy.cad import MotorGeometryBuilder, MotorGeometryResult
 from propulpy.chamber import Chamber
@@ -38,7 +38,7 @@ from propulpy.flight import (
     run_flight_simulation,
     synthesize_neutral_thrust_curve,
 )
-from propulpy.grains import BATES, Grain
+from propulpy.grains import BATES, CrossSectionGrain2D, EndBurner, Finocyl, Grain, Star
 from propulpy.motor import SolidMotor
 from propulpy.nozzle import ConicalNozzle
 from propulpy.propellants import KNSB, BurnRateLaw, PiecewiseSaintRobert, Propellant, SaintRobert
@@ -51,6 +51,9 @@ __all__ = [
     "CasingGeometry",
     "Chamber",
     "ConicalNozzle",
+    "CrossSectionGrain2D",
+    "EndBurner",
+    "Finocyl",
     "FlightPerformanceReport",
     "FlightRequirements",
     "FuselageConstraints",
@@ -70,6 +73,7 @@ __all__ = [
     "SaintRobert",
     "SearchResult",
     "SolidMotor",
+    "Star",
     "ThrustCurveData",
     "__version__",
     "build_solid_motor",

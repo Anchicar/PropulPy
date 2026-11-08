@@ -23,9 +23,9 @@ evaluated at any launch site and date.
 |---|---|
 | `nozzle.isentropic`, `ConicalNozzle` | ✅ |
 | `Propellant`, `SaintRobert`, `PiecewiseSaintRobert`, `KNSB` | ✅ |
-| `grains.BATES`, `Chamber` | ✅ |
+| `grains.BATES`, `EndBurner`, `Finocyl`, `Star`, `Chamber` | ✅ |
 | `AmbientConditions` (float or `rocketpy.Environment`) | ✅ |
-| `SolidMotor.simulate()`, `MotorResults`, `to_rocketpy()`, `.eng`/`.ric`/`.csv` export | ✅ |
+| `SolidMotor.simulate()`, `SolidMotor.from_ric()`, `MotorResults`, `to_rocketpy()`, `.eng`/`.ric`/`.csv` export | ✅ |
 | `analysis.checks` (`check_motor_design`, safety audit) | ✅ |
 | `design.nozzle` (`dimension_nozzle`, trajectory optimization) | ✅ |
 | `flight` & `design.mission` (`MotorRequirements`, RocketPy apogee check, `find_grain_length_for_apogee`) | ✅ |

@@ -3,7 +3,7 @@ import math
 import numpy as np
 import pytest
 
-from propulpy.grains import BATES
+from propulpy.grains import BATES, EndBurner, Finocyl, Star
 
 # UltraLuminics notebook motor (cell 8): 2 x BATES 38 x 12.5 x 62 mm
 GRAIN = BATES(diameter=38e-3, core_diameter=12.5e-3, length=62e-3)
@@ -64,3 +64,45 @@ def test_inhibited_ends():
 def test_invalid_grains_rejected(kwargs):
     with pytest.raises(ValueError):
         BATES(**kwargs)
+
+
+def test_end_burner_grain():
+    g = EndBurner(diameter=38e-3, length=60e-3)
+    expected_area = math.pi * (38e-3) ** 2 / 4.0
+    assert g.web_thickness == pytest.approx(60e-3)
+    assert g.burn_area(0.0) == pytest.approx(expected_area)
+    assert g.burn_area(30e-3) == pytest.approx(expected_area)
+    assert g.burn_area(60e-3) == 0.0
+    assert g.volume(0.0) == pytest.approx(expected_area * 60e-3)
+    assert g.volume(60e-3) == 0.0
+
+
+def test_finocyl_and_star_grains():
+    fin = Finocyl(
+        diameter=38e-3,
+        core_diameter=12e-3,
+        fin_length=6e-3,
+        fin_width=2e-3,
+        num_fins=6,
+        length=62e-3,
+        inhibited_ends="both",
+        grid_resolution=201,
+    )
+    # Finocyl has larger initial burning surface area than an equivalent BATES grain
+    bates_equiv = BATES(diameter=38e-3, core_diameter=12e-3, length=62e-3, inhibited_ends="both")
+    assert fin.burn_area(0.0) > bates_equiv.burn_area(0.0)
+    assert fin.volume(0.0) < bates_equiv.volume(0.0)
+    assert fin.burn_area(fin.web_thickness) == 0.0
+
+    star = Star(
+        diameter=38e-3,
+        inner_diameter=12e-3,
+        point_diameter=24e-3,
+        num_points=5,
+        length=62e-3,
+        inhibited_ends="neither",
+        grid_resolution=201,
+    )
+    assert star.burn_area(0.0) > 0.0
+    assert star.volume(0.0) > 0.0
+    assert star.burn_area(star.web_thickness) == 0.0
