@@ -142,7 +142,11 @@ def evaluate_motor_performance(
     avg_thrust = float(motor.average_thrust)
     max_thrust = float(np.max(motor.thrust.y_array))
     propellant_mass = float(motor.propellant_initial_mass)
-    isp = float(motor.total_impulse / (propellant_mass * G0)) if propellant_mass > 0 else 0.0
+    isp = (
+        float(motor.total_impulse / (propellant_mass * G0))
+        if propellant_mass > 0
+        else 0.0
+    )
     exhaust_velocity = isp * G0
     mdot_avg = propellant_mass / burn_time if burn_time > 0 else 0.0
     weight_N = req.flight.rocket_liftoff_mass * G0
@@ -294,4 +298,3 @@ def run_flight_simulation(
         out_of_rail_velocity_m_s=float(flight.out_of_rail_velocity),
         apogee_tolerance_pct=req.flight.apogee_tolerance_pct,
     )
-

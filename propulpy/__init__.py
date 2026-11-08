@@ -41,7 +41,13 @@ from propulpy.flight import (
 from propulpy.grains import BATES, CrossSectionGrain2D, EndBurner, Finocyl, Grain, Star
 from propulpy.motor import SolidMotor
 from propulpy.nozzle import ConicalNozzle
-from propulpy.propellants import KNSB, BurnRateLaw, PiecewiseSaintRobert, Propellant, SaintRobert
+from propulpy.propellants import (
+    KNSB,
+    BurnRateLaw,
+    PiecewiseSaintRobert,
+    Propellant,
+    SaintRobert,
+)
 from propulpy.results import MotorResults
 
 __all__ = [

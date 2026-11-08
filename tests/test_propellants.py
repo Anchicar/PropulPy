@@ -28,9 +28,7 @@ def test_piecewise_law_matches_single_law_and_numeric_solver():
 
 
 def test_piecewise_selects_segment():
-    law = PiecewiseSaintRobert.from_mpa(
-        [(0.1, 1.0, 1e-3, 0.3), (1.0, 5.0, 2e-3, 0.5)]
-    )
+    law = PiecewiseSaintRobert.from_mpa([(0.1, 1.0, 1e-3, 0.3), (1.0, 5.0, 2e-3, 0.5)])
     assert law.exponent(0.5e6) == 0.3
     assert law.exponent(2e6) == 0.5
     assert law.exponent(50e6) == 0.5  # extrapolates with the closest segment

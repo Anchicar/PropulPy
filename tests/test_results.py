@@ -33,7 +33,7 @@ def test_export_eng(sim_results, tmp_path):
     content = eng_file.read_text(encoding="utf-8")
     assert "H150-UL" in content
     assert "UltraLuminics" in content
-    lines = [l for l in content.splitlines() if not l.startswith(";")]
+    lines = [ln for ln in content.splitlines() if not ln.startswith(";")]
     # First non-comment line is header, following lines are time-thrust pairs
     assert len(lines) > 50
 

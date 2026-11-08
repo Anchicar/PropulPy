@@ -20,7 +20,7 @@ from propulpy.design.nozzle import dimension_nozzle
 
 # 1. Environment: Launch conditions in Bogota (elevation 2600 m ASL)
 env = Environment(latitude=4.6, longitude=-74.08, elevation=2600.0)
-print(f"Ambient ground pressure: {env.pressure(2600)/1e5:.3f} bar")
+print(f"Ambient ground pressure: {env.pressure(2600) / 1e5:.3f} bar")
 
 # 2. Propellant definition
 prop = KNSB(cstar_efficiency=0.95)
@@ -74,7 +74,9 @@ out_dir = Path("outputs")
 out_dir.mkdir(exist_ok=True)
 results.export_csv(out_dir / "ultraluminics_motor.csv")
 results.export_eng(out_dir / "ultraluminics_motor.eng", motor_name="H150-UL")
-results.export_ric(out_dir / "ultraluminics_motor.ric", description="UltraLuminics KNSB")
+results.export_ric(
+    out_dir / "ultraluminics_motor.ric", description="UltraLuminics KNSB"
+)
 print(f"\nMotor files successfully exported to '{out_dir.absolute()}/'")
 
 # 9. Ready for RocketPy

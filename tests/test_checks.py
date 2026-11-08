@@ -1,5 +1,3 @@
-import pytest
-
 from propulpy import BATES, KNSB, Chamber, ConicalNozzle, SolidMotor
 from propulpy.analysis.checks import check_motor_design
 

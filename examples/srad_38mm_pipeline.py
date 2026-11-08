@@ -154,7 +154,9 @@ def run_pipeline(
     req.validate()
 
     print(f"Longitud total del motor: {req.motor_total_length * 1000:.1f} mm")
-    print(f"Radio interno de carcasa disponible: {req.casing_inner_radius * 1000:.2f} mm\n")
+    print(
+        f"Radio interno de carcasa disponible: {req.casing_inner_radius * 1000:.2f} mm\n"
+    )
 
     # 1) PropulPy Internal Ballistics Audit on progressive 5-grain stack
     propulpy_motor = req.to_solid_motor()
@@ -201,4 +203,3 @@ if __name__ == "__main__":
         f"(apogeo {result.simulated_apogee_m:.0f} m, {result.iterations} iteraciones)\n"
     )
     run_pipeline(result.requirements, output_dir="./motor_cad_output_srad38")
-

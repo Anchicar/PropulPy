@@ -65,6 +65,6 @@ from propulpy.grains import BATES
 grain = BATES(diameter=38e-3, core_diameter=12.5e-3, length=62e-3)
 x = np.linspace(0.0, grain.web_thickness, 100)
 
-areas = grain.burn_area(x)   # Retorna un arreglo NumPy de 100 puntos
+areas = grain.burn_area(x)  # Retorna un arreglo NumPy de 100 puntos
 vol = grain.volume(x)
 ```

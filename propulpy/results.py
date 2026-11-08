@@ -16,10 +16,6 @@ _trapz = getattr(np, "trapezoid", getattr(np, "trapz", None))
 
 if TYPE_CHECKING:
     import matplotlib.pyplot as plt
-    from propulpy.chamber import Chamber
-    from propulpy.grains.base import Grain
-    from propulpy.nozzle.nozzle import ConicalNozzle
-    from propulpy.propellants.propellant import Propellant
 
 
 def _motor_classification(total_impulse: float, average_thrust: float) -> str:
@@ -148,10 +144,14 @@ class MotorResults:
         print(f"             PROPULPY SOLID MOTOR SUMMARY ({self.motor_class})")
         print("=" * 65)
         print(f"Propellant              : {self.propellant.name}")
-        print(f"Propellant Mass Loaded  : {self.initial_propellant_mass:.3f} kg ({self.burned_propellant_mass:.3f} kg burned)")
+        print(
+            f"Propellant Mass Loaded  : {self.initial_propellant_mass:.3f} kg ({self.burned_propellant_mass:.3f} kg burned)"
+        )
         print(f"Number of Grains        : {len(self.grains)}")
         print(f"Nozzle Throat Diameter  : {self.nozzle.throat_diameter * 1e3:.2f} mm")
-        print(f"Nozzle Exit Diameter    : {self.nozzle.exit_diameter * 1e3:.2f} mm (eps = {self.nozzle.area_ratio:.2f})")
+        print(
+            f"Nozzle Exit Diameter    : {self.nozzle.exit_diameter * 1e3:.2f} mm (eps = {self.nozzle.area_ratio:.2f})"
+        )
         print(f"Nozzle Efficiency (eta) : {self.nozzle.efficiency:.2f}")
         print("-" * 65)
         print("PERFORMANCE METRICS:")
@@ -160,7 +160,9 @@ class MotorResults:
         print(f"  * Burn Time           : {self.burn_time:.2f} s")
         print(f"  * Average Thrust      : {self.average_thrust:.1f} N")
         print(f"  * Peak Thrust         : {self.max_thrust:.1f} N")
-        print(f"  * Peak Chamber Press. : {self.max_chamber_pressure / 1e5:.2f} bar ({self.max_chamber_pressure / 1e6:.2f} MPa)")
+        print(
+            f"  * Peak Chamber Press. : {self.max_chamber_pressure / 1e5:.2f} bar ({self.max_chamber_pressure / 1e6:.2f} MPa)"
+        )
         print(f"  * Initial Kn (Ab / At): {self.kn[0]:.1f}")
         print(f"  * Peak Kn             : {np.max(self.kn):.1f}")
         print("=" * 65)
@@ -180,7 +182,9 @@ class MotorResults:
         # 2. Chamber Pressure
         axs[0, 1].plot(self.time, self.chamber_pressure / 1e5, color="tab:blue", lw=2)
         axs[0, 1].set_ylabel("Chamber Pressure [bar]")
-        axs[0, 1].set_title(f"Chamber Pressure (Peak = {self.max_chamber_pressure/1e5:.1f} bar)")
+        axs[0, 1].set_title(
+            f"Chamber Pressure (Peak = {self.max_chamber_pressure / 1e5:.1f} bar)"
+        )
         axs[0, 1].grid(True, alpha=0.3)
 
         # 3. Kn (Ab / At)
@@ -192,18 +196,31 @@ class MotorResults:
 
         # 4. Propellant Mass & Mass Flow Rate
         ax_m = axs[1, 1]
-        line1 = ax_m.plot(self.time, self.propellant_mass * 1e3, color="tab:green", lw=2, label="Propellant Mass [g]")
+        line1 = ax_m.plot(
+            self.time,
+            self.propellant_mass * 1e3,
+            color="tab:green",
+            lw=2,
+            label="Propellant Mass [g]",
+        )
         ax_m.set_ylabel("Propellant Mass [g]", color="tab:green")
         ax_m.tick_params(axis="y", labelcolor="tab:green")
         ax_m.set_xlabel("Time [s]")
 
         ax_mdot = ax_m.twinx()
-        line2 = ax_mdot.plot(self.time, self.mass_flow_rate * 1e3, color="tab:orange", lw=1.5, ls="--", label="Mass Flow [g/s]")
+        line2 = ax_mdot.plot(
+            self.time,
+            self.mass_flow_rate * 1e3,
+            color="tab:orange",
+            lw=1.5,
+            ls="--",
+            label="Mass Flow [g/s]",
+        )
         ax_mdot.set_ylabel("Mass Flow [g/s]", color="tab:orange")
         ax_mdot.tick_params(axis="y", labelcolor="tab:orange")
 
         lines = line1 + line2
-        labels = [l.get_label() for l in lines]
+        labels = [ln.get_label() for ln in lines]
         ax_m.legend(lines, labels, loc="upper right")
         ax_m.grid(True, alpha=0.3)
         axs[1, 1].set_title("Mass Consumption")
@@ -280,8 +297,16 @@ class MotorResults:
 
         path = Path(filename)
         # Convert Saint-Robert coefficient to Pa units
-        a_pa = self.propellant.burn_rate.a if hasattr(self.propellant.burn_rate, "a") else 1e-5
-        n = self.propellant.burn_rate.n if hasattr(self.propellant.burn_rate, "n") else 0.5
+        a_pa = (
+            self.propellant.burn_rate.a
+            if hasattr(self.propellant.burn_rate, "a")
+            else 1e-5
+        )
+        n = (
+            self.propellant.burn_rate.n
+            if hasattr(self.propellant.burn_rate, "n")
+            else 0.5
+        )
 
         grains_data = []
         for g in self.grains:
@@ -293,15 +318,17 @@ class MotorResults:
             else:
                 inhib_str = inhib_str.capitalize()
 
-            grains_data.append({
-                "type": type(g).__name__,
-                "properties": {
-                    "diameter": g.outer_diameter,
-                    "length": getattr(g, "length", 0.06),
-                    "coreDiameter": getattr(g, "core_diameter", 0.01),
-                    "inhibitedEnds": inhib_str,
-                },
-            })
+            grains_data.append(
+                {
+                    "type": type(g).__name__,
+                    "properties": {
+                        "diameter": g.outer_diameter,
+                        "length": getattr(g, "length", 0.06),
+                        "coreDiameter": getattr(g, "core_diameter", 0.01),
+                        "inhibitedEnds": inhib_str,
+                    },
+                }
+            )
 
         nozzle_data = {
             "throat": self.nozzle.throat_diameter,
@@ -315,15 +342,17 @@ class MotorResults:
         propellant_data = {
             "name": self.propellant.name,
             "density": self.propellant.density,
-            "tabs": [{
-                "minPressure": 0.0,
-                "maxPressure": 1.5e7,
-                "a": a_pa,
-                "n": n,
-                "k": self.propellant.k,
-                "t": self.propellant.combustion_temperature,
-                "m": self.propellant.molar_mass,
-            }],
+            "tabs": [
+                {
+                    "minPressure": 0.0,
+                    "maxPressure": 1.5e7,
+                    "a": a_pa,
+                    "n": n,
+                    "k": self.propellant.k,
+                    "t": self.propellant.combustion_temperature,
+                    "m": self.propellant.molar_mass,
+                }
+            ],
         }
 
         config_data = {
@@ -351,8 +380,12 @@ type: !!python/object/apply:uilib.fileIO.fileTypes
 - 3
 data:
 """
-        data_yaml = yaml.dump(data_dict, default_flow_style=False, sort_keys=False, allow_unicode=True)
-        indented = "\n".join("  " + line if line.strip() else line for line in data_yaml.splitlines())
+        data_yaml = yaml.dump(
+            data_dict, default_flow_style=False, sort_keys=False, allow_unicode=True
+        )
+        indented = "\n".join(
+            "  " + line if line.strip() else line for line in data_yaml.splitlines()
+        )
 
         with path.open("w", encoding="utf-8") as f:
             f.write(header + indented + "\n")
@@ -407,7 +440,9 @@ data:
 
         if grains_center_of_mass_position is None:
             # Estimate from middle of grain stack
-            grains_center_of_mass_position = nozzle_position + (n_grains * grain_l) / 2.0 + 0.03
+            grains_center_of_mass_position = (
+                nozzle_position + (n_grains * grain_l) / 2.0 + 0.03
+            )
 
         # Note: in RocketPy:
         # nozzle_radius = exit radius [m]

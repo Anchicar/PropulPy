@@ -39,11 +39,13 @@ Permite ingresar $a$ en la unidad convencional de cohetería experimental $[\tex
 Permite definir leyes de quemado por tramos o rangos de presión contiguos, tal como ocurre en los datos de Richard Nakka para KNSB o KNDX:
 
 ```python
-PiecewiseSaintRobert.from_mpa(table=[
-    (0.1, 1.0, 1.5e-3, 0.35),  # De 0.1 a 1.0 MPa
-    (1.0, 5.0, 3.8e-3, 0.52),  # De 1.0 a 5.0 MPa
-    (5.0, 10.0, 5.2e-3, 0.60), # De 5.0 a 10.0 MPa
-])
+PiecewiseSaintRobert.from_mpa(
+    table=[
+        (0.1, 1.0, 1.5e-3, 0.35),  # De 0.1 a 1.0 MPa
+        (1.0, 5.0, 3.8e-3, 0.52),  # De 1.0 a 5.0 MPa
+        (5.0, 10.0, 5.2e-3, 0.60),  # De 5.0 a 10.0 MPa
+    ]
+)
 ```
 
 ---
@@ -105,5 +107,5 @@ Crea una instancia preconfigurada de Nitrato de Potasio / Sorbitol (65/35):
 from propulpy.propellants import KNSB
 
 prop = KNSB(cstar_efficiency=0.95)
-print(f"c* entregado: {prop.cstar:.1f} m/s") # ~840.9 m/s
+print(f"c* entregado: {prop.cstar:.1f} m/s")  # ~840.9 m/s
 ```

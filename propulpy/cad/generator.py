@@ -10,7 +10,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from propulpy.flight.requirements import MotorRequirements
 
@@ -230,4 +230,3 @@ class MotorGeometryBuilder:
             assembly=assy_path,
             output_dir=out,
         )
-

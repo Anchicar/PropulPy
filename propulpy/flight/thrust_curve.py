@@ -72,4 +72,3 @@ def synthesize_neutral_thrust_curve(
     f_scaled = shape * scale
 
     return [(float(tt), float(ff)) for tt, ff in zip(t, f_scaled, strict=False)]
-

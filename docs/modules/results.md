@@ -73,9 +73,9 @@ Construye un objeto nativo de RocketPy completamente configurado y listo para a�
 
 ```python
 rp_motor = results.to_rocketpy(
-    dry_mass=0.600,                           # Masa seca del motor [kg]
-    dry_inertia=(0.05, 0.05, 0.001),          # Inercias secas (Ixx, Iyy, Izz) [kg*m^2]
-    center_of_dry_mass_position=0.10,         # Posición del centro de masa seca [m]
+    dry_mass=0.600,  # Masa seca del motor [kg]
+    dry_inertia=(0.05, 0.05, 0.001),  # Inercias secas (Ixx, Iyy, Izz) [kg*m^2]
+    center_of_dry_mass_position=0.10,  # Posición del centro de masa seca [m]
     coordinate_system_orientation="nozzle_to_combustion_chamber",
 )
 ```

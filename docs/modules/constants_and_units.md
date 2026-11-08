@@ -39,10 +39,10 @@ PropulPy utiliza internamente metros, pascales, kilogramos y segundos. Los conve
 from propulpy.units import mm, to_mm, bar, to_bar
 
 # Conversión a SI:
-d = mm(38.0)        # Retorna 0.038 m
-p = bar(40.0)       # Retorna 4.0e6 Pa (40 bar en Pa)
+d = mm(38.0)  # Retorna 0.038 m
+p = bar(40.0)  # Retorna 4.0e6 Pa (40 bar en Pa)
 
 # Conversión desde SI para visualización:
 print(f"Diámetro: {to_mm(d):.1f} mm")  # 38.0 mm
-print(f"Presión: {to_bar(p):.1f} bar") # 40.0 bar
+print(f"Presión: {to_bar(p):.1f} bar")  # 40.0 bar
 ```

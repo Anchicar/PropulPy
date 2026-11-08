@@ -101,4 +101,3 @@ def test_cad_builder_validates_requirements():
     req = _sample_requirements(0.05)
     builder = MotorGeometryBuilder(req)
     assert builder.req.motor_name == "test_srad_38mm"
-

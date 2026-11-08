@@ -137,9 +137,13 @@ def simulate_quasi_steady(
         curr_p = p_bo
         while curr_p > ambient_pressure * 1.02 and (curr_t - t_bo) < 5.0 * tau:
             curr_t += dt_bd
-            curr_p = ambient_pressure + (p_bo - ambient_pressure) * math.exp(-(curr_t - t_bo) / tau)
+            curr_p = ambient_pressure + (p_bo - ambient_pressure) * math.exp(
+                -(curr_t - t_bo) / tau
+            )
             curr_f = nozzle.thrust(propellant.k, curr_p, ambient_pressure)
-            curr_md = (curr_p * at) / propellant.cstar if curr_p > ambient_pressure else 0.0
+            curr_md = (
+                (curr_p * at) / propellant.cstar if curr_p > ambient_pressure else 0.0
+            )
             bd_times.append(curr_t)
             bd_pc.append(curr_p)
             bd_thrust.append(max(curr_f, 0.0))

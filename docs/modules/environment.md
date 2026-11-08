@@ -57,7 +57,7 @@ from propulpy import AmbientConditions
 env = Environment(latitude=4.6097, longitude=-74.0817, elevation=2600.0)
 
 amb = AmbientConditions(env)
-print(f"Presión en rampa: {amb.ground_pressure/1e5:.3f} bar")  # ~0.738 bar
+print(f"Presión en rampa: {amb.ground_pressure / 1e5:.3f} bar")  # ~0.738 bar
 
 # Presión a 5000 metros de altitud durante el vuelo:
 p_5000 = amb.pressure(5000.0)

@@ -33,7 +33,10 @@ class Chamber:
             raise ValueError("inner_diameter must be positive.")
         if self.length <= 0:
             raise ValueError("length must be positive.")
-        if self.outer_diameter is not None and self.outer_diameter <= self.inner_diameter:
+        if (
+            self.outer_diameter is not None
+            and self.outer_diameter <= self.inner_diameter
+        ):
             raise ValueError("outer_diameter must be greater than inner_diameter.")
         if self.yield_strength is not None and self.yield_strength <= 0:
             raise ValueError("yield_strength must be positive.")

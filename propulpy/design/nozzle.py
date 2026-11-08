@@ -74,15 +74,23 @@ class NozzleDimensions:
         print("MACHINING GEOMETRY (mm):")
         print(f"  * Throat Diameter (Dt)     : {self.throat_diameter * 1e3:.2f} mm")
         print(f"  * Exit Diameter (De)       : {self.exit_diameter * 1e3:.2f} mm")
-        print(f"  * Convergent Length (Lconv): {self.convergent_length * 1e3:.2f} mm  (half-angle = {self.convergence_half_angle:.1f}°)")
+        print(
+            f"  * Convergent Length (Lconv): {self.convergent_length * 1e3:.2f} mm  (half-angle = {self.convergence_half_angle:.1f}°)"
+        )
         print(f"  * Throat Land Length (Lt)  : {self.throat_length * 1e3:.2f} mm")
-        print(f"  * Divergent Length (Ldiv)  : {self.divergent_length * 1e3:.2f} mm  (half-angle = {self.divergence_half_angle:.1f}°)")
-        print(f"  * Total Nozzle Length      : {(self.convergent_length + self.throat_length + self.divergent_length) * 1e3:.2f} mm")
+        print(
+            f"  * Divergent Length (Ldiv)  : {self.divergent_length * 1e3:.2f} mm  (half-angle = {self.divergence_half_angle:.1f}°)"
+        )
+        print(
+            f"  * Total Nozzle Length      : {(self.convergent_length + self.throat_length + self.divergent_length) * 1e3:.2f} mm"
+        )
         print("-" * 65)
         print("GAS DYNAMICS & DELIVERED PERFORMANCE:")
         print(f"  * Expansion Ratio (eps)    : {self.area_ratio:.2f}")
         print(f"  * Exit Mach Number (Me)    : {self.exit_mach:.3f}")
-        print(f"  * Exit Static Pressure (Pe): {self.exit_pressure / 1e5:.3f} bar ({self.exit_pressure:.0f} Pa)")
+        print(
+            f"  * Exit Static Pressure (Pe): {self.exit_pressure / 1e5:.3f} bar ({self.exit_pressure:.0f} Pa)"
+        )
         print(f"  * Delivered Cf             : {self.thrust_coefficient:.3f}")
         print(f"  * Delivered Thrust         : {self.thrust:.1f} N")
         print("=" * 65)
@@ -158,18 +166,24 @@ def dimension_nozzle(
         p_amb = P_STANDARD
     elif isinstance(ambient_pressure, AmbientConditions):
         p_amb = ambient_pressure.ground_pressure
-    elif hasattr(ambient_pressure, "pressure") and hasattr(ambient_pressure, "elevation"):
+    elif hasattr(ambient_pressure, "pressure") and hasattr(
+        ambient_pressure, "elevation"
+    ):
         p_amb = AmbientConditions(ambient_pressure).ground_pressure
     elif isinstance(ambient_pressure, (int, float)):
         p_amb = float(ambient_pressure)
     else:
-        raise TypeError("ambient_pressure must be a float, AmbientConditions, or rocketpy.Environment.")
+        raise TypeError(
+            "ambient_pressure must be a float, AmbientConditions, or rocketpy.Environment."
+        )
 
     if target_exit_pressure is not None:
         p_exit_target = float(target_exit_pressure)
         if p_exit_target <= 0 or p_exit_target >= chamber_pressure:
             raise ValueError("target_exit_pressure must be in (0, chamber_pressure).")
-        m_exit = isentropic.mach_from_pressure_ratio(p_exit_target / chamber_pressure, k)
+        m_exit = isentropic.mach_from_pressure_ratio(
+            p_exit_target / chamber_pressure, k
+        )
         eps = isentropic.area_ratio_from_mach(m_exit, k)
     else:
         eps_opt = isentropic.optimal_area_ratio(chamber_pressure, p_amb, k)
@@ -270,7 +284,6 @@ def optimize_divergent_along_trajectory(
 
     pa_history = environment.pressure(altitude_profile)
     k = propellant.k
-    at = math.pi * throat_diameter**2 / 4.0
 
     # Compatibility with NumPy < 2.0 (trapz) and NumPy >= 2.0 (trapezoid)
     _trapz = getattr(np, "trapezoid", getattr(np, "trapz", None))

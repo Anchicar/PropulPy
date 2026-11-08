@@ -51,7 +51,9 @@ nozzle = ConicalNozzle(throat_diameter=5.88e-3, exit_diameter=13.8e-3, efficienc
 kn = 2 * grain.burn_area(0.0) / nozzle.throat_area
 pc = prop.equilibrium_pressure(kn)
 pa = AmbientConditions(101325.0).ground_pressure
-print(f"Kn = {kn:.1f}, Pc = {pc/1e5:.1f} bar, F = {nozzle.thrust(prop.k, pc, pa):.1f} N")
+print(
+    f"Kn = {kn:.1f}, Pc = {pc / 1e5:.1f} bar, F = {nozzle.thrust(prop.k, pc, pa):.1f} N"
+)
 ```
 
 ## Units

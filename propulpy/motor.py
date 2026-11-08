@@ -127,14 +127,18 @@ class SolidMotor:
             p_amb = P_STANDARD
         elif isinstance(ambient_pressure, AmbientConditions):
             p_amb = ambient_pressure.pressure(altitude)
-        elif hasattr(ambient_pressure, "pressure") and hasattr(ambient_pressure, "elevation"):
+        elif hasattr(ambient_pressure, "pressure") and hasattr(
+            ambient_pressure, "elevation"
+        ):
             # Duck-typed rocketpy.Environment
             amb_cond = AmbientConditions(ambient_pressure)
             p_amb = amb_cond.pressure(altitude)
         elif isinstance(ambient_pressure, (int, float)):
             p_amb = float(ambient_pressure)
         else:
-            raise TypeError("ambient_pressure must be a float, AmbientConditions, or rocketpy.Environment.")
+            raise TypeError(
+                "ambient_pressure must be a float, AmbientConditions, or rocketpy.Environment."
+            )
 
         return simulate_quasi_steady(
             propellant=self.propellant,

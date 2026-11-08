@@ -96,7 +96,11 @@ class PiecewiseSaintRobert(BurnRateLaw):
         for p_min, p_max, law in self.segments:
             if p_min <= pressure < p_max:
                 return law
-        return self.segments[0][2] if pressure < self.segments[0][0] else self.segments[-1][2]
+        return (
+            self.segments[0][2]
+            if pressure < self.segments[0][0]
+            else self.segments[-1][2]
+        )
 
     def __call__(self, pressure: float) -> float:
         return self._law(pressure)(pressure)

@@ -89,7 +89,9 @@ def test_finocyl_and_star_grains():
         grid_resolution=201,
     )
     # Finocyl has larger initial burning surface area than an equivalent BATES grain
-    bates_equiv = BATES(diameter=38e-3, core_diameter=12e-3, length=62e-3, inhibited_ends="both")
+    bates_equiv = BATES(
+        diameter=38e-3, core_diameter=12e-3, length=62e-3, inhibited_ends="both"
+    )
     assert fin.burn_area(0.0) > bates_equiv.burn_area(0.0)
     assert fin.volume(0.0) < bates_equiv.volume(0.0)
     assert fin.burn_area(fin.web_thickness) == 0.0

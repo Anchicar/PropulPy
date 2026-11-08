@@ -32,7 +32,9 @@ class CheckResult:
     message: str
 
 
-def check_motor_design(motor: SolidMotor, results: MotorResults | None = None) -> list[CheckResult]:
+def check_motor_design(
+    motor: SolidMotor, results: MotorResults | None = None
+) -> list[CheckResult]:
     """Run comprehensive ballistics and structural safety checks on a motor.
 
     Evaluates:
@@ -103,7 +105,9 @@ def check_motor_design(motor: SolidMotor, results: MotorResults | None = None) -
 
     # 4. Grain Aspect Ratios (d/D and L/D for BATES grains)
     g0 = motor.grain_list[0]
-    if hasattr(g0, "core_to_diameter_ratio") and hasattr(g0, "length_to_diameter_ratio"):
+    if hasattr(g0, "core_to_diameter_ratio") and hasattr(
+        g0, "length_to_diameter_ratio"
+    ):
         d_ratio = g0.core_to_diameter_ratio
         if 0.25 <= d_ratio <= 0.60:
             status = "OK"
@@ -143,7 +147,9 @@ def check_motor_design(motor: SolidMotor, results: MotorResults | None = None) -
             msg = f"Casing safety factor ({sf:.2f}) is generous (>= 2.0)."
         elif sf >= 1.5:
             status = "OK"
-            msg = f"Casing safety factor ({sf:.2f}) meets aerospace standard (1.5 - 2.0)."
+            msg = (
+                f"Casing safety factor ({sf:.2f}) meets aerospace standard (1.5 - 2.0)."
+            )
         elif sf >= 1.25:
             status = "WARNING"
             msg = f"Casing safety factor ({sf:.2f}) is low (< 1.5); consider increasing wall thickness."
@@ -153,7 +159,10 @@ def check_motor_design(motor: SolidMotor, results: MotorResults | None = None) -
         checks.append(CheckResult("Casing Safety Factor", sf, status, msg))
 
     # 5. Nozzle Flow Separation (Summerfield Criterion: Pe >= 0.35 * Pa)
-    pe_pa_min = (results.chamber_pressure[0] * motor.nozzle.exit_pressure(motor.propellant.k, 1.0)) / results.ambient_pressure
+    pe_pa_min = (
+        results.chamber_pressure[0]
+        * motor.nozzle.exit_pressure(motor.propellant.k, 1.0)
+    ) / results.ambient_pressure
     if pe_pa_min >= 0.40:
         status = "OK"
         msg = f"Nozzle exit pressure ratio Pe/Pa ({pe_pa_min:.2f}) is well above separation threshold."

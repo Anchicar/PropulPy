@@ -35,4 +35,3 @@ __all__ = [
     "run_flight_simulation",
     "synthesize_neutral_thrust_curve",
 ]
-

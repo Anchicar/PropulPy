@@ -103,9 +103,7 @@ class ThrustCurveData:
             return self.samples
         if self.eng_like is not None:
             return self.eng_like
-        raise ValueError(
-            "ThrustCurveData requires file_path, samples, or eng_like."
-        )
+        raise ValueError("ThrustCurveData requires file_path, samples, or eng_like.")
 
 
 @dataclass
@@ -199,9 +197,13 @@ class MotorRequirements:
                 "Reduce el grano o el espesor de carcasa/liner, o aumenta el diámetro del fuselaje."
             )
         if self.physical.nozzle_radius <= self.physical.throat_radius:
-            errors.append("El radio de salida de la tobera debe ser mayor que el radio de garganta.")
+            errors.append(
+                "El radio de salida de la tobera debe ser mayor que el radio de garganta."
+            )
         if self.grain.grain_initial_inner_radius >= self.grain.grain_outer_radius:
-            errors.append("El radio interno inicial del grano debe ser menor que su radio externo.")
+            errors.append(
+                "El radio interno inicial del grano debe ser menor que su radio externo."
+            )
         if self.grain.grain_inner_radii is not None:
             if len(self.grain.grain_inner_radii) != self.grain.number_of_grains:
                 errors.append(
@@ -219,9 +221,13 @@ class MotorRequirements:
             + 2.0 * (self.casing.wall_thickness + self.casing.liner_thickness)
             > total_od + 1e-9
         ):
-            errors.append("La carcasa propuesta no cabe dentro del diámetro de fuselaje indicado.")
+            errors.append(
+                "La carcasa propuesta no cabe dentro del diámetro de fuselaje indicado."
+            )
         if errors:
-            raise ValueError("Errores de validación en MotorRequirements:\n- " + "\n- ".join(errors))
+            raise ValueError(
+                "Errores de validación en MotorRequirements:\n- " + "\n- ".join(errors)
+            )
 
     @property
     def casing_inner_radius(self) -> float:
@@ -330,4 +336,3 @@ class MotorRequirements:
             nozzle=nozzle,
             chamber=chamber,
         )
-

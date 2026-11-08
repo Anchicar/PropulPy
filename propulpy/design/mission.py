@@ -110,4 +110,3 @@ def find_grain_length_for_apogee(
         f"No convergió en {max_iterations} iteraciones. Último error: {err_mid:+.1f} % "
         f"con grain_initial_height={mid * 1000:.1f} mm. Revisa la tolerancia o el rango de búsqueda."
     )
-

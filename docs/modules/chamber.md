@@ -62,10 +62,10 @@ casing = Chamber(
     yield_strength=276e6,  # 276 MPa
 )
 
-print(f"Espesor de pared: {casing.wall_thickness * 1e3:.2f} mm")     # 2.00 mm
-print(f"Presión de estallido: {casing.burst_pressure() / 1e5:.1f} bar") # 240.0 bar
+print(f"Espesor de pared: {casing.wall_thickness * 1e3:.2f} mm")  # 2.00 mm
+print(f"Presión de estallido: {casing.burst_pressure() / 1e5:.1f} bar")  # 240.0 bar
 
 # Factor de seguridad operando a 40 bar de presión en cámara:
 sf = casing.safety_factor(40e5)
-print(f"Factor de seguridad: {sf:.2f}") # 6.00
+print(f"Factor de seguridad: {sf:.2f}")  # 6.00
 ```

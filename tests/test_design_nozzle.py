@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from propulpy import AmbientConditions, KNSB
+from propulpy import KNSB, AmbientConditions
 from propulpy.design import dimension_nozzle, optimize_divergent_along_trajectory
 
 
@@ -37,7 +37,9 @@ def test_dimension_nozzle_with_safety_factor():
         ambient_pressure=101325.0,
         area_ratio_safety_factor=0.80,  # As done in the notebook
     )
-    assert dims_trimmed.area_ratio == pytest.approx(0.80 * dims_ideal.area_ratio, rel=1e-4)
+    assert dims_trimmed.area_ratio == pytest.approx(
+        0.80 * dims_ideal.area_ratio, rel=1e-4
+    )
     assert dims_trimmed.exit_diameter < dims_ideal.exit_diameter
     # Trimmed exit pressure is higher than 1 atm
     assert dims_trimmed.exit_pressure > 101325.0

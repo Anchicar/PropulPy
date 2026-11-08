@@ -146,7 +146,11 @@ class CrossSectionGrain2D(Grain):
 
         # Remaining propellant area at each bin edge (from x=0 to x=max_radial_web)
         rem_prop_at_edges = np.concatenate(
-            [[float(np.sum(shell_areas))], np.cumsum(shell_areas[::-1])[::-1][1:], [0.0]]
+            [
+                [float(np.sum(shell_areas))],
+                np.cumsum(shell_areas[::-1])[::-1][1:],
+                [0.0],
+            ]
         )
         self._x_table = edges
         self._prop_area_table = rem_prop_at_edges
