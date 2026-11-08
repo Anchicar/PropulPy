@@ -62,3 +62,32 @@ def test_optimize_divergent_along_trajectory():
     )
     assert 4.0 <= dims.area_ratio <= 10.0
     assert dims.exit_diameter > dims.throat_diameter
+
+
+def test_nozzle_dimensions_plot_and_validation(tmp_path):
+    import matplotlib.pyplot as plt
+
+    prop = KNSB()
+    dims = dimension_nozzle(
+        throat_diameter=5.88e-3,
+        chamber_pressure=40e5,
+        propellant=prop,
+        chamber_diameter=42e-3,
+        ambient_pressure=73700.0,
+    )
+    img_path = tmp_path / "nozzle_blueprint.png"
+    fig = dims.plot(show=False, save_path=img_path)
+    plt.close(fig)
+    assert img_path.exists()
+    assert img_path.stat().st_size > 10_000
+
+    with pytest.raises(ValueError, match="\\[dimension_nozzle\\]"):
+        dimension_nozzle(throat_diameter=-1e-3, chamber_pressure=40e5, propellant=prop)
+
+    with pytest.raises(ValueError, match="\\[dimension_nozzle\\]"):
+        dimension_nozzle(
+            throat_diameter=5.88e-3,
+            chamber_pressure=40e5,
+            propellant=prop,
+            target_exit_pressure=50e5,
+        )

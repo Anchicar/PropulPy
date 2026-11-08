@@ -56,6 +56,13 @@ print(
 )
 ```
 
+## Interactive Example Notebooks (`examples/`)
+
+- **[`examples/quickstart_ultraluminics.ipynb`](examples/quickstart_ultraluminics.ipynb)**: Step-by-step interactive walkthrough of **Level 1 Nozzle Inverse Design (`dimension_nozzle`)**, pressure-expansion regimes & Summerfield separation criteria, 1D/2D Euclidean Distance Transform (`EDT`) grain geometries (`BATES`, `Finocyl`, `Star`, `EndBurner`), quasi-steady firing simulation with blowdown, and one-line `RocketPy` / `openMotor` (`.ric` & `.eng`) integration.
+- **[`examples/srad_38mm_pipeline.ipynb`](examples/srad_38mm_pipeline.ipynb)**: Complete **Mission-to-CAD Pipeline** (`SRAD 38 mm KNSB`), featuring apogee bisection inverse search (`find_grain_length_for_apogee`), stepped-core 5-grain internal ballistics audit (`[16, 17, 18, 19, 20] mm`), 6-DOF `RocketPy` flight verification, and parametric 3D `STEP` generation (`MotorGeometryBuilder`).
+
+![Nozzle Inverse Design Blueprint](examples/figures/02_dimension_nozzle_blueprint.png)
+
 ## Units
 
 SI everywhere internally (m, Pa, kg, s). Helpers in `propulpy.units` convert at the boundaries.
