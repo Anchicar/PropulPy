@@ -1,0 +1,10 @@
+numpy>=1.23
+scipy>=1.10
+matplotlib>=3.7
+rocketpy>=1.8
+pyyaml>=6.0
+
+# Optional dependencies (3D CAD export & optimization):
+# cadquery>=2.4
+# pymoo>=0.6
+# cantera>=3.0

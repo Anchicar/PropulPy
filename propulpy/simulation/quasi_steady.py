@@ -91,7 +91,11 @@ def simulate_quasi_steady(
             r_val = propellant.burn_rate(p_eq)
             r[i] = r_val
             m_dot[i] = (p_eq * at) / propellant.cstar
-            thrust[i] = nozzle.thrust(propellant.k, p_eq, ambient_pressure)
+            thrust[i] = (
+                max(nozzle.thrust(propellant.k, p_eq, ambient_pressure), 0.0)
+                if p_eq > ambient_pressure
+                else 0.0
+            )
         else:
             pc[i] = ambient_pressure
             r[i] = 0.0

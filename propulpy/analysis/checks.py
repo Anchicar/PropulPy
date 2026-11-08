@@ -88,7 +88,41 @@ def check_motor_design(motor: SolidMotor, results: MotorResults | None = None) -
         msg = f"Initial Kn ({kn_0:.1f}) is critically high (> 400); risk of casing overpressure."
     checks.append(CheckResult("Initial Kn", kn_0, status, msg))
 
-    # 3. Peak Chamber Pressure
+    # 3. Peak Kn
+    kn_peak = float(results.kn.max()) if len(results.kn) > 0 else kn_0
+    if kn_peak <= 350.0:
+        status = "OK"
+        msg = f"Peak Kn ({kn_peak:.1f}) is within nominal operating range (<= 350)."
+    elif kn_peak <= 400.0:
+        status = "WARNING"
+        msg = f"Peak Kn ({kn_peak:.1f}) is elevated (350 - 400); verify casing pressure rating."
+    else:
+        status = "DANGER"
+        msg = f"Peak Kn ({kn_peak:.1f}) is critically high (> 400); risk of casing overpressure."
+    checks.append(CheckResult("Peak Kn", kn_peak, status, msg))
+
+    # 4. Grain Aspect Ratios (d/D and L/D for BATES grains)
+    g0 = motor.grain_list[0]
+    if hasattr(g0, "core_to_diameter_ratio") and hasattr(g0, "length_to_diameter_ratio"):
+        d_ratio = g0.core_to_diameter_ratio
+        if 0.25 <= d_ratio <= 0.60:
+            status = "OK"
+            msg = f"Grain core-to-diameter ratio d/D ({d_ratio:.2f}) is well proportioned (0.25 - 0.60)."
+        else:
+            status = "WARNING"
+            msg = f"Grain core-to-diameter ratio d/D ({d_ratio:.2f}) is outside typical range (0.25 - 0.60)."
+        checks.append(CheckResult("Grain Core Ratio (d/D)", d_ratio, status, msg))
+
+        ld_ratio = g0.length_to_diameter_ratio
+        if 1.2 <= ld_ratio <= 2.5:
+            status = "OK"
+            msg = f"Grain segment aspect ratio L/D ({ld_ratio:.2f}) promotes near-neutral burn (1.2 - 2.5)."
+        else:
+            status = "WARNING"
+            msg = f"Grain segment aspect ratio L/D ({ld_ratio:.2f}) deviates from neutral BATES range (1.2 - 2.5)."
+        checks.append(CheckResult("Grain Aspect Ratio (L/D)", ld_ratio, status, msg))
+
+    # 5. Peak Chamber Pressure
     pc_peak_bar = results.max_chamber_pressure / 1e5
     if pc_peak_bar <= 45.0:
         status = "OK"

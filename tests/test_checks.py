@@ -19,6 +19,9 @@ def test_safety_checks_on_nominal_motor():
     status_dict = {c.name: c.status for c in checks}
     assert status_dict["Port-to-Throat Ratio (Ap/At)"] == "OK"
     assert status_dict["Initial Kn"] == "OK"
+    assert status_dict["Peak Kn"] == "WARNING"
+    assert status_dict["Grain Core Ratio (d/D)"] == "OK"
+    assert status_dict["Grain Aspect Ratio (L/D)"] == "OK"
     # Peak pressure reaches ~54 bar due to progressive regression, producing a WARNING (> 45 bar)
     assert status_dict["Peak Chamber Pressure (bar)"] == "WARNING"
     assert status_dict["Casing Safety Factor"] == "OK"

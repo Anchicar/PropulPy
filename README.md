@@ -23,10 +23,13 @@ evaluated at any launch site and date.
 |---|---|
 | `nozzle.isentropic`, `ConicalNozzle` | ✅ |
 | `Propellant`, `SaintRobert`, `PiecewiseSaintRobert`, `KNSB` | ✅ |
-| `grains.BATES` | ✅ |
+| `grains.BATES`, `Chamber` | ✅ |
 | `AmbientConditions` (float or `rocketpy.Environment`) | ✅ |
-| Solid motor simulator, `to_rocketpy()` | v0.2 – v0.3 |
-| Inverse design (component / motor / mission) | v0.4 – v0.6 |
+| `SolidMotor.simulate()`, `MotorResults`, `to_rocketpy()`, `.eng`/`.ric`/`.csv` export | ✅ |
+| `analysis.checks` (`check_motor_design`, safety audit) | ✅ |
+| `design.nozzle` (`dimension_nozzle`, trajectory optimization) | ✅ |
+| `flight` & `design.mission` (`MotorRequirements`, RocketPy apogee check, `find_grain_length_for_apogee`) | ✅ |
+| `cad` (`MotorGeometryBuilder`, parametric 3D STEP AP214 & STL export via CadQuery) | ✅ |
 
 ## Quick start
 

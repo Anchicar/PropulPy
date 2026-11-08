@@ -249,7 +249,7 @@ class MotorResults:
         total_len_mm = (
             self.chamber.length * 1e3
             if self.chamber
-            else sum(g.length for g in self.grains if hasattr(g, "length")) + 60.0
+            else sum(g.length for g in self.grains if hasattr(g, "length")) * 1e3 + 60.0
         )
         m_prop_kg = self.burned_propellant_mass
         m_total_kg = m_prop_kg + (0.500 if not self.chamber else 0.400)

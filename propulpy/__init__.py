@@ -12,8 +12,32 @@ All quantities are in SI units unless an explicit unit helper or parameter says 
 
 __version__ = "0.1.0"
 
+from propulpy.cad import MotorGeometryBuilder, MotorGeometryResult
 from propulpy.chamber import Chamber
+from propulpy.design import (
+    NozzleDimensions,
+    SearchResult,
+    dimension_nozzle,
+    find_grain_length_for_apogee,
+    optimize_divergent_along_trajectory,
+)
 from propulpy.environment import AmbientConditions
+from propulpy.flight import (
+    CasingGeometry,
+    FlightPerformanceReport,
+    FlightRequirements,
+    FuselageConstraints,
+    GrainGeometry,
+    MotorPerformanceReport,
+    MotorPhysicalParams,
+    MotorRequirements,
+    PropellantData,
+    ThrustCurveData,
+    build_solid_motor,
+    evaluate_motor_performance,
+    run_flight_simulation,
+    synthesize_neutral_thrust_curve,
+)
 from propulpy.grains import BATES, Grain
 from propulpy.motor import SolidMotor
 from propulpy.nozzle import ConicalNozzle
@@ -24,14 +48,35 @@ __all__ = [
     "BATES",
     "AmbientConditions",
     "BurnRateLaw",
+    "CasingGeometry",
     "Chamber",
     "ConicalNozzle",
+    "FlightPerformanceReport",
+    "FlightRequirements",
+    "FuselageConstraints",
     "Grain",
+    "GrainGeometry",
     "KNSB",
+    "MotorGeometryBuilder",
+    "MotorGeometryResult",
+    "MotorPerformanceReport",
+    "MotorPhysicalParams",
+    "MotorRequirements",
     "MotorResults",
+    "NozzleDimensions",
     "PiecewiseSaintRobert",
     "Propellant",
+    "PropellantData",
     "SaintRobert",
+    "SearchResult",
     "SolidMotor",
+    "ThrustCurveData",
     "__version__",
+    "build_solid_motor",
+    "dimension_nozzle",
+    "evaluate_motor_performance",
+    "find_grain_length_for_apogee",
+    "optimize_divergent_along_trajectory",
+    "run_flight_simulation",
+    "synthesize_neutral_thrust_curve",
 ]

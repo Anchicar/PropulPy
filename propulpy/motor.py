@@ -77,8 +77,8 @@ class SolidMotor:
 
     @property
     def initial_port_area(self) -> float:
-        """Initial internal port cross-sectional area [m^2]."""
-        return self._grains[0].port_area(0.0)
+        """Minimum initial internal port cross-sectional area across grains [m^2]."""
+        return min(g.port_area(0.0) for g in self._grains)
 
     @property
     def initial_port_to_throat_ratio(self) -> float:
