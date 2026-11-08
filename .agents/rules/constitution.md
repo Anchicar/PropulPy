@@ -4,3 +4,4 @@ description: Constitución SDD de PropulPy: observabilidad ultra-fina en el cód
 ---
 
 @[Constitución de PropulPy](../constitution.md)
+

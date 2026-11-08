@@ -7,9 +7,13 @@ evaluated at any launch site and date (or along a flight trajectory).
 
 from __future__ import annotations
 
+import logging
+
 import numpy as np
 
 from propulpy.constants import P_STANDARD
+
+logger = logging.getLogger(__name__)
 
 
 class AmbientConditions:
@@ -36,7 +40,13 @@ class AmbientConditions:
             self.elevation = 0.0
         elif isinstance(source, (int, float)):
             if source < 0:
-                raise ValueError("Ambient pressure must be non-negative.")
+                msg = (
+                    f"[AmbientConditions.__init__] Invalid ambient pressure source={source} Pa "
+                    f"({source / 1e5:.4f} bar). Constraint violated: pressure >= 0 Pa. "
+                    "Provide a non-negative atmospheric pressure in Pascals."
+                )
+                logger.error(msg)
+                raise ValueError(msg)
             self._constant = float(source)
             self.elevation = 0.0
         elif hasattr(source, "pressure") and hasattr(source, "elevation"):
@@ -44,9 +54,20 @@ class AmbientConditions:
             self._constant = None
             self.elevation = float(source.elevation)
         else:
-            raise TypeError(
-                "source must be None, a pressure in Pa, or a rocketpy.Environment."
+            msg = (
+                f"[AmbientConditions.__init__] Invalid source={source!r} of type "
+                f"{type(source).__name__}. Constraint violated: source must be None, "
+                "a non-negative pressure in Pa (float/int), or a rocketpy.Environment instance."
             )
+            logger.error(msg)
+            raise TypeError(msg)
+        logger.debug(
+            "[AmbientConditions] Initialized (%s): elevation=%.1f m, ground_pressure=%.1f Pa (%.3f bar)",
+            "constant" if self.is_constant else type(self.source).__name__,
+            self.elevation,
+            self.ground_pressure,
+            self.ground_pressure / 1e5,
+        )
 
     @property
     def is_constant(self) -> bool:

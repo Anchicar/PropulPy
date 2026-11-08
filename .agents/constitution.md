@@ -48,6 +48,9 @@ Cada vez que se desarrolle, modifique o refactorice cualquier módulo de `Propul
 
 1. **Commit y Push Automático al finalizar cada desarrollo**:
    - Cada vez que se complete un nuevo desarrollo, corrección o iteración de una especificación y las pruebas (`pytest` + `ruff`) estén en verde:
-     - Se debe ejecutar automáticamente `git add` de los archivos pertinentes (verificando nunca incluir credenciales, tokens ni archivos temporales).
-     - Se debe crear un `git commit` atómico con un mensaje descriptivo claro siguiendo convenciones limpias (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`).
-     - Se debe ejecutar inmediatamente `git push origin main` (o a la rama activa) de forma automática para mantener el repositorio remoto siempre sincronizado y actualizado.
+     - Se debe ejecutar automáticamente `git add -A` de los archivos pertinentes (verificando nunca incluir credenciales, tokens ni archivos temporales).
+     - Se debe crear un `git commit` atómico que incluya obligatoriamente **un Título conciso y una Descripción detallada (cuerpo del commit)**:
+       - **Título (primera línea)**: Prefijo semántico (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`) seguido de un resumen ejecutivo claro del cambio.
+       - **Descripción detallada (cuerpo multilínea, `-m "<cuerpo>"`)**: Explicación exhaustiva de **qué** se implementó o modificó, **por qué** se realizó el cambio, **qué archivos/módulos** fueron intervenidos, las invariantes físicas o de observabilidad añadidas y el resultado de las validaciones (`pytest` / `ruff`), de modo que el historial de versionamiento (`git log`) brinde la máxima información y trazabilidad posible de todo lo realizado hasta la fecha.
+     - Se debe ejecutar inmediatamente `git push origin main` (o a la rama activa) de forma automática y verificar con `git status` que el árbol de trabajo quede completamente limpio (`nothing to commit, working tree clean`).
+

@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import logging
 import math
 from dataclasses import dataclass
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -30,16 +33,48 @@ class Chamber:
 
     def __post_init__(self):
         if self.inner_diameter <= 0:
-            raise ValueError("inner_diameter must be positive.")
+            msg = (
+                f"[Chamber.__post_init__] Invalid inner_diameter={self.inner_diameter:.6f} m "
+                f"({self.inner_diameter * 1e3:.2f} mm). Constraint violated: inner_diameter > 0. "
+                "Specify a positive internal casing diameter in meters."
+            )
+            logger.error(msg)
+            raise ValueError(msg)
         if self.length <= 0:
-            raise ValueError("length must be positive.")
+            msg = (
+                f"[Chamber.__post_init__] Invalid length={self.length:.6f} m "
+                f"({self.length * 1e3:.2f} mm). Constraint violated: length > 0. "
+                "Specify a positive internal usable chamber length in meters."
+            )
+            logger.error(msg)
+            raise ValueError(msg)
         if (
             self.outer_diameter is not None
             and self.outer_diameter <= self.inner_diameter
         ):
-            raise ValueError("outer_diameter must be greater than inner_diameter.")
+            msg = (
+                f"[Chamber.__post_init__] Invalid outer_diameter={self.outer_diameter:.6f} m "
+                f"({self.outer_diameter * 1e3:.2f} mm) <= inner_diameter={self.inner_diameter:.6f} m "
+                f"({self.inner_diameter * 1e3:.2f} mm). Constraint violated: outer_diameter > inner_diameter. "
+                "Increase outer_diameter or reduce inner_diameter so wall thickness is positive."
+            )
+            logger.error(msg)
+            raise ValueError(msg)
         if self.yield_strength is not None and self.yield_strength <= 0:
-            raise ValueError("yield_strength must be positive.")
+            msg = (
+                f"[Chamber.__post_init__] Invalid yield_strength={self.yield_strength:.3e} Pa "
+                f"({self.yield_strength / 1e6:.2f} MPa). Constraint violated: yield_strength > 0. "
+                "Provide a positive material yield strength in Pascals (e.g. 276e6 Pa for Al 6061-T6)."
+            )
+            logger.error(msg)
+            raise ValueError(msg)
+        logger.debug(
+            "[Chamber] Initialized: ID=%.2f mm, L=%.2f mm, OD=%s, sigma_y=%s",
+            self.inner_diameter * 1e3,
+            self.length * 1e3,
+            f"{self.outer_diameter * 1e3:.2f} mm" if self.outer_diameter else "None",
+            f"{self.yield_strength / 1e6:.1f} MPa" if self.yield_strength else "None",
+        )
 
     @property
     def cross_sectional_area(self) -> float:
@@ -65,12 +100,29 @@ class Chamber:
         """
         if self.wall_thickness is None or self.yield_strength is None:
             return None
-        # Barlow's formula: P_burst = (2 * sigma * t) / D_outer
-        return (2.0 * self.yield_strength * self.wall_thickness) / self.outer_diameter
+        p_burst = (
+            2.0 * self.yield_strength * self.wall_thickness
+        ) / self.outer_diameter
+        logger.debug(
+            "[Chamber.burst_pressure] P_burst=%.2f bar (%.2f MPa) for t=%.2f mm, OD=%.2f mm, sigma_y=%.1f MPa",
+            p_burst / 1e5,
+            p_burst / 1e6,
+            self.wall_thickness * 1e3,
+            self.outer_diameter * 1e3,
+            self.yield_strength / 1e6,
+        )
+        return p_burst
 
     def safety_factor(self, peak_pressure: float) -> float | None:
         """Structural safety factor against yield at a given chamber pressure."""
         p_burst = self.burst_pressure()
         if p_burst is None or peak_pressure <= 0:
             return None
-        return p_burst / peak_pressure
+        sf = p_burst / peak_pressure
+        logger.debug(
+            "[Chamber.safety_factor] SF=%.3f (P_burst=%.2f bar / P_peak=%.2f bar)",
+            sf,
+            p_burst / 1e5,
+            peak_pressure / 1e5,
+        )
+        return sf

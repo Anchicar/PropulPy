@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import logging
 import math
 from dataclasses import dataclass
 
 from propulpy.nozzle import isentropic
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -38,13 +41,44 @@ class ConicalNozzle:
 
     def __post_init__(self):
         if self.throat_diameter <= 0:
-            raise ValueError("throat_diameter must be positive.")
+            msg = (
+                f"[ConicalNozzle.__post_init__] Invalid throat_diameter={self.throat_diameter:.6f} m "
+                f"({self.throat_diameter * 1e3:.2f} mm). Constraint violated: throat_diameter > 0. "
+                "Provide a positive throat diameter in meters."
+            )
+            logger.error(msg)
+            raise ValueError(msg)
         if self.exit_diameter < self.throat_diameter:
-            raise ValueError("exit_diameter must be >= throat_diameter.")
+            msg = (
+                f"[ConicalNozzle.__post_init__] Invalid exit_diameter={self.exit_diameter:.6f} m "
+                f"({self.exit_diameter * 1e3:.2f} mm) < throat_diameter={self.throat_diameter:.6f} m "
+                f"({self.throat_diameter * 1e3:.2f} mm). Constraint violated: exit_diameter >= throat_diameter. "
+                "Increase exit_diameter or reduce throat_diameter for a supersonic nozzle."
+            )
+            logger.error(msg)
+            raise ValueError(msg)
         if not 0.0 < self.divergence_half_angle < 90.0:
-            raise ValueError("divergence_half_angle must be in (0, 90) degrees.")
+            msg = (
+                f"[ConicalNozzle.__post_init__] Invalid divergence_half_angle={self.divergence_half_angle:.2f} deg. "
+                "Constraint violated: 0 < divergence_half_angle < 90 degrees (typical range: 12-18 deg)."
+            )
+            logger.error(msg)
+            raise ValueError(msg)
         if not 0.0 < self.efficiency <= 1.0:
-            raise ValueError("efficiency must be in (0, 1].")
+            msg = (
+                f"[ConicalNozzle.__post_init__] Invalid efficiency={self.efficiency:.4f}. "
+                "Constraint violated: 0 < efficiency <= 1.0. Specify a fraction in (0, 1]."
+            )
+            logger.error(msg)
+            raise ValueError(msg)
+        logger.debug(
+            "[ConicalNozzle] Initialized: Dt=%.2f mm, De=%.2f mm (eps=%.2f), alpha=%.1f deg, eta=%.2f",
+            self.throat_diameter * 1e3,
+            self.exit_diameter * 1e3,
+            self.area_ratio,
+            self.divergence_half_angle,
+            self.efficiency,
+        )
 
     @property
     def throat_area(self) -> float:
