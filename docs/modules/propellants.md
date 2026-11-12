@@ -6,7 +6,7 @@ El subpaquete `propulpy.propellants` modela las leyes de quemado, las propiedade
 
 ## 1. Leyes de Quemado (`burn_rate.py`)
 
-Archivo fuente: [propulpy/propellants/burn_rate.py](file:///c:/Users/57322/OneDrive/Escritorio/UltraLuminics/PropulPy/propulpy/propellants/burn_rate.py)
+Archivo fuente: `propulpy/propellants/burn_rate.py`
 
 ### Interfaz `BurnRateLaw`
 Clase abstracta base. Todas las leyes deben implementar:
@@ -52,7 +52,7 @@ PiecewiseSaintRobert.from_mpa(
 
 ## 2. Definición del Propelente (`propellant.py`)
 
-Archivo fuente: [propulpy/propellants/propellant.py](file:///c:/Users/57322/OneDrive/Escritorio/UltraLuminics/PropulPy/propulpy/propellants/propellant.py)
+Archivo fuente: `propulpy/propellants/propellant.py`
 
 ### Clase `Propellant`
 
@@ -93,7 +93,7 @@ Calcula la presión estática de equilibrio $P_c$ $[\text{Pa}]$ para un $K_n$ da
 
 ## 3. Biblioteca de Propelentes (`library.py`)
 
-Archivo fuente: [propulpy/propellants/library.py](file:///c:/Users/57322/OneDrive/Escritorio/UltraLuminics/PropulPy/propulpy/propellants/library.py)
+Archivo fuente: `propulpy/propellants/library.py`
 
 ### Función `KNSB(...)`
 Crea una instancia preconfigurada de Nitrato de Potasio / Sorbitol (65/35):

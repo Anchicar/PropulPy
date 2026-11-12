@@ -1,6 +1,6 @@
 # Módulo: Cámara y Casing Estructural (`chamber.py`)
 
-Archivo fuente: [propulpy/chamber.py](file:///c:/Users/57322/OneDrive/Escritorio/UltraLuminics/PropulPy/propulpy/chamber.py)
+Archivo fuente: `propulpy/chamber.py`
 
 El módulo `chamber` define la geometría interna de la cámara de combustión y los límites mecánicos del tubo estructural exterior (*motor casing*).
 

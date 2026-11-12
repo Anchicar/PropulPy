@@ -1,6 +1,6 @@
-# Módulo: Diseño Inverso de Componentes (`design/`)
+# Módulo: Diseño Inverso de Componentes y Misión (`design/`)
 
-Archivo fuente: [propulpy/design/nozzle.py](file:///c:/Users/57322/OneDrive/Escritorio/UltraLuminics/PropulPy/propulpy/design/nozzle.py)
+Archivos fuente: `propulpy/design/nozzle.py`, `propulpy/design/mission.py`
 
 El subpaquete `propulpy.design` representa el corazón de la visión del proyecto: **encontrar automáticamente las geometrías y dimensiones óptimas** a partir de objetivos operativos y restricciones prácticas de fabricación.
 
@@ -28,6 +28,7 @@ Representa el plano geométrico completo de mecanizado y desempeño de una tober
 
 ### Métodos
 - `report()`: Imprime un informe de mecanizado con todas las cotas en milímetros y grados.
+- `plot(show=True, save_path=None) -> matplotlib.figure.Figure`: Genera un plano visual de 3 paneles con el flujo `Entradas -> Solver Isentrópico 1D -> Salidas`, el corte axial 2D a escala con el mapa de calor de presión estática $P(x)$ y las curvas axiales acopladas $P(x)$ y $M(x)$.
 - `to_nozzle() -> ConicalNozzle`: Convierte las dimensiones en un objeto tobera listo para simulación.
 
 ---
@@ -85,3 +86,18 @@ A medida que el cohete asciende, la presión atmosférica $P_a(z)$ disminuye seg
 $$\max_{\varepsilon \in [2, 15]} I_{tot} = \int_0^{t_{burn}} F(\varepsilon, P_c, P_a(z(t))) dt$$
 
 Encontrando el diámetro de salida $D_e$ que maximiza la energía propulsiva neta entregada al vehículo a lo largo de todo el ascenso motorizado.
+
+---
+
+## Diseño Inverso de Misión en Lazo Cerrado con RocketPy (`mission.py`)
+
+### `design_motor_for_rocket_apogee(rocket, environment, target_apogee=1000.0, ...)`
+
+Dado un objeto `rocketpy.Rocket` previamente configurado (con su ojiva, aletas, botones de guía, masa estructural y coeficientes de arrastre) y un objeto `rocketpy.Environment`, **co-diseña de forma completamente automática** el motor de propelente sólido (`KNSB` por defecto) que permite alcanzar exactamente el apogeo objetivo `target_apogee` $[\text{m AGL}]$ al volarlo en `rocketpy.Flight`:
+
+1. En cada iteración sobre la longitud de segmento de grano `BATES` ($L_g$), calcula el área de quemado y despeja el diámetro de garganta $D_t$ necesario para sostener `design_chamber_pressure` ($40\text{ bar}$ por defecto).
+2. Dimensiona la tobera supersónica completa ($D_e, \varepsilon, L_{\text{conv}}, L_t, L_{\text{div}}$) adaptada a la presión atmosférica de `environment` mediante `dimension_nozzle()`.
+3. Ejecuta la simulación cuasi-estacionaria de balística interna (`motor.simulate()`).
+4. Convierte el motor en un `rocketpy.SolidMotor` (`results.to_rocketpy()`), lo monta en una copia limpia del `rocket` y simula el vuelo 6-DOF en `rocketpy.Flight` hasta converger en `target_apogee`.
+
+Retorna un objeto `RocketApogeeDesignResult` con `.motor`, `.nozzle_dims`, `.ballistics_results`, `.rocketpy_motor`, `.flight` y `.history`.

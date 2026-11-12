@@ -1,6 +1,6 @@
 # Módulo: Ensamblaje del Motor (`motor.py`)
 
-Archivo fuente: [propulpy/motor.py](file:///c:/Users/57322/OneDrive/Escritorio/UltraLuminics/PropulPy/propulpy/motor.py)
+Archivo fuente: `propulpy/motor.py`
 
 La clase `SolidMotor` es el objeto integrador de PropulPy. Une en un único modelo de diseño la termoquímica del propelente, la configuración geométrica de los granos, la aerodinámica de la tobera y la carcasa estructural.
 
@@ -71,3 +71,17 @@ motor.simulate(
 ### Retorno
 
 Retorna un objeto `MotorResults` que contiene todas las series de tiempo ($F(t), P_c(t), \dot{m}(t), K_n(t)$), métricas integradas y métodos de exportación.
+
+---
+
+## Método de Clase `SolidMotor.from_ric(filename)`
+
+Importa directamente una configuración de motor desde un archivo `.ric` (YAML de `openMotor`), reconstruyendo automáticamente el `Propellant` (incluyendo leyes `SaintRobert` o `PiecewiseSaintRobert` por tramos), la `ConicalNozzle` y la lista de granos (`BATES`, `EndBurner`, `Finocyl` o `Star`):
+
+```python
+from propulpy import SolidMotor
+
+motor = SolidMotor.from_ric("outputs/ultraluminics_motor.ric")
+results = motor.simulate()
+results.info()
+```

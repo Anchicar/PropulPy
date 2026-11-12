@@ -1,6 +1,6 @@
 # Módulo: Auditoría y Verificación de Seguridad (`analysis/`)
 
-Archivo fuente: [propulpy/analysis/checks.py](file:///c:/Users/57322/OneDrive/Escritorio/UltraLuminics/PropulPy/propulpy/analysis/checks.py)
+Archivo fuente: `propulpy/analysis/checks.py`
 
 El módulo `analysis` proporciona herramientas automatizadas de auditoría y control de calidad antes de proceder a la fabricación del hardware o al encendido del motor.
 

@@ -1,6 +1,6 @@
 # Módulo: Simulación Numérica (`simulation/`)
 
-Archivo fuente: [propulpy/simulation/quasi_steady.py](file:///c:/Users/57322/OneDrive/Escritorio/UltraLuminics/PropulPy/propulpy/simulation/quasi_steady.py)
+Archivo fuente: `propulpy/simulation/quasi_steady.py`
 
 El motor de simulación de PropulPy implementa una integración numérica cuasi-estacionaria precisa, tomando la coordenada de regresión del web $x$ como la variable independiente de integración.
 

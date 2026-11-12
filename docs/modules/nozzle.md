@@ -6,7 +6,7 @@ El subpaquete `propulpy.nozzle` implementa las ecuaciones termodinámicas del fl
 
 ## 1. Ecuaciones Isentrópicas Puras (`isentropic.py`)
 
-Archivo fuente: [propulpy/nozzle/isentropic.py](file:///c:/Users/57322/OneDrive/Escritorio/UltraLuminics/PropulPy/propulpy/nozzle/isentropic.py)
+Archivo fuente: `propulpy/nozzle/isentropic.py`
 
 Funciones analíticas puras y optimizadas numéricamente:
 
@@ -45,7 +45,7 @@ $$C_F = C_{F, momentum} + \left( \frac{P_e}{P_c} - \frac{P_a}{P_c} \right) \vare
 
 ## 2. Tobera Cónica de Laval (`nozzle.py`)
 
-Archivo fuente: [propulpy/nozzle/nozzle.py](file:///c:/Users/57322/OneDrive/Escritorio/UltraLuminics/PropulPy/propulpy/nozzle/nozzle.py)
+Archivo fuente: `propulpy/nozzle/nozzle.py`
 
 ### Clase `ConicalNozzle`
 

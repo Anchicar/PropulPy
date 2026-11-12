@@ -1,6 +1,6 @@
 # Módulo: Resultados y Exportación (`results.py`)
 
-Archivo fuente: [propulpy/results.py](file:///c:/Users/57322/OneDrive/Escritorio/UltraLuminics/PropulPy/propulpy/results.py)
+Archivo fuente: `propulpy/results.py`
 
 La clase `MotorResults` encapsula los historiales temporales generados por la simulación, calcula las métricas globales de rendimiento, produce gráficas diagnósticas y exporta los datos en formatos estándar de la industria.
 

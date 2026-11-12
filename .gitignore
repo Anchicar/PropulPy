@@ -16,3 +16,7 @@ docs/_build/
 *.eng
 *.ric
 curva_*.csv
+
+# Local real-rocket development workspace (not tracked in GitHub)
+dev_cohete_real/
+
