@@ -103,6 +103,81 @@ class RocketApogeeDesignResult:
     history: list[IterationRecord]
 
 
+def build_motor_candidate_for_mission(
+    grain_length_m: float,
+    environment: Any,
+    propellant: Propellant | None = None,
+    num_grains: int = 3,
+    grain_outer_diameter: float = 38.0e-3,
+    core_diameter: float = 12.5e-3,
+    design_chamber_pressure: float = 40.0e5,
+    throat_diameter: float | None = None,
+    chamber_inner_diameter: float = 42.0e-3,
+    chamber_outer_diameter: float = 46.0e-3,
+    yield_strength: float = 276.0e6,
+    area_ratio_safety_factor: float = 0.85,
+    nozzle_efficiency: float = 0.90,
+    dry_motor_mass: float = 0.500,
+    dry_motor_inertia: tuple[float, float, float] = (0.04, 0.04, 0.001),
+    center_of_dry_mass_position: float = 0.12,
+) -> tuple[SolidMotor, NozzleDimensions, MotorResults, Any]:
+    """Build, simulate, and convert a candidate solid motor for RocketPy mission loops."""
+    if propellant is None:
+        propellant = KNSB(cstar_efficiency=0.95)
+
+    grains = [
+        BATES(
+            diameter=grain_outer_diameter,
+            core_diameter=core_diameter,
+            length=grain_length_m,
+            inhibited_ends="neither",
+        )
+        for _ in range(num_grains)
+    ]
+
+    if throat_diameter is None:
+        # Size throat so peak / average Kn corresponds to design_chamber_pressure
+        w_mid = grains[0].web_thickness * 0.45
+        ab_ref = sum(float(g.burn_area(w_mid)) for g in grains)
+        kn_target = propellant.kn_for_pressure(design_chamber_pressure)
+        at_req = ab_ref / kn_target
+        dt = 2.0 * math.sqrt(at_req / math.pi)
+    else:
+        dt = float(throat_diameter)
+
+    noz_dims = dimension_nozzle(
+        throat_diameter=dt,
+        chamber_pressure=design_chamber_pressure,
+        propellant=propellant,
+        chamber_diameter=chamber_inner_diameter,
+        ambient_pressure=environment,
+        area_ratio_safety_factor=area_ratio_safety_factor,
+        efficiency=nozzle_efficiency,
+    )
+
+    chamber = Chamber(
+        inner_diameter=chamber_inner_diameter,
+        length=num_grains * grain_length_m + 0.04,
+        outer_diameter=chamber_outer_diameter,
+        yield_strength=yield_strength,
+    )
+
+    motor = SolidMotor(
+        propellant=propellant,
+        grains=grains,
+        nozzle=noz_dims.to_nozzle(),
+        chamber=chamber,
+    )
+
+    sim_res = motor.simulate(ambient_pressure=environment)
+    rp_motor = sim_res.to_rocketpy(
+        dry_mass=dry_motor_mass,
+        dry_inertia=dry_motor_inertia,
+        center_of_dry_mass_position=center_of_dry_mass_position,
+    )
+    return motor, noz_dims, sim_res, rp_motor
+
+
 def design_motor_for_rocket_apogee(
     rocket: Any,
     environment: Any,
@@ -239,56 +314,25 @@ def design_motor_for_rocket_apogee(
         nonlocal step_counter
         step_counter += 1
 
-        grains = [
-            BATES(
-                diameter=grain_outer_diameter,
-                core_diameter=core_diameter,
-                length=lg,
-                inhibited_ends="neither",
-            )
-            for _ in range(num_grains)
-        ]
-
-        if throat_diameter is None:
-            # Size throat so Peak / Average Kn corresponds to design_chamber_pressure
-            w_mid = grains[0].web_thickness * 0.45
-            ab_ref = sum(float(g.burn_area(w_mid)) for g in grains)
-            kn_target = propellant.kn_for_pressure(design_chamber_pressure)
-            at_req = ab_ref / kn_target
-            dt = 2.0 * math.sqrt(at_req / math.pi)
-        else:
-            dt = float(throat_diameter)
-
-        noz_dims = dimension_nozzle(
-            throat_diameter=dt,
-            chamber_pressure=design_chamber_pressure,
+        motor, noz_dims, sim_res, rp_motor = build_motor_candidate_for_mission(
+            grain_length_m=lg,
+            environment=environment,
             propellant=propellant,
-            chamber_diameter=chamber_inner_diameter,
-            ambient_pressure=environment,
-            area_ratio_safety_factor=area_ratio_safety_factor,
-            efficiency=nozzle_efficiency,
-        )
-
-        chamber = Chamber(
-            inner_diameter=chamber_inner_diameter,
-            length=num_grains * lg + 0.04,
-            outer_diameter=chamber_outer_diameter,
+            num_grains=num_grains,
+            grain_outer_diameter=grain_outer_diameter,
+            core_diameter=core_diameter,
+            design_chamber_pressure=design_chamber_pressure,
+            throat_diameter=throat_diameter,
+            chamber_inner_diameter=chamber_inner_diameter,
+            chamber_outer_diameter=chamber_outer_diameter,
             yield_strength=yield_strength,
-        )
-
-        motor = SolidMotor(
-            propellant=propellant,
-            grains=grains,
-            nozzle=noz_dims.to_nozzle(),
-            chamber=chamber,
-        )
-
-        sim_res = motor.simulate(ambient_pressure=environment)
-        rp_motor = sim_res.to_rocketpy(
-            dry_mass=dry_motor_mass,
-            dry_inertia=dry_motor_inertia,
+            area_ratio_safety_factor=area_ratio_safety_factor,
+            nozzle_efficiency=nozzle_efficiency,
+            dry_motor_mass=dry_motor_mass,
+            dry_motor_inertia=dry_motor_inertia,
             center_of_dry_mass_position=center_of_dry_mass_position,
         )
+        dt = noz_dims.throat_diameter
 
         r_clone = _fresh_rocket()
         r_clone.add_motor(rp_motor, position=motor_position)
@@ -495,3 +539,36 @@ def find_grain_length_for_apogee(
         f"No convergió en {max_iterations} iteraciones. Último error: {err_mid:+.1f} % "
         f"con grain_initial_height={mid * 1000:.1f} mm. Revisa la tolerancia o el rango de búsqueda."
     )
+
+
+from propulpy.design.coupled import (  # noqa: E402
+    AirframeSpec,
+    CoupledDesignIteration,
+    CoupledStabilityApogeeResult,
+    FinSetSpec,
+    GeometrySearchBounds,
+    NoseConeSpec,
+    StabilityApogeeTarget,
+    build_rocket_from_airframe,
+    design_rocket_and_motor_for_apogee,
+    solve_fin_span_for_stability,
+)
+
+__all__ = [
+    "AirframeSpec",
+    "CoupledDesignIteration",
+    "CoupledStabilityApogeeResult",
+    "FinSetSpec",
+    "GeometrySearchBounds",
+    "IterationRecord",
+    "NoseConeSpec",
+    "RocketApogeeDesignResult",
+    "SearchResult",
+    "StabilityApogeeTarget",
+    "build_motor_candidate_for_mission",
+    "build_rocket_from_airframe",
+    "design_motor_for_rocket_apogee",
+    "design_rocket_and_motor_for_apogee",
+    "find_grain_length_for_apogee",
+    "solve_fin_span_for_stability",
+]
